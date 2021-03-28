@@ -1,0 +1,35 @@
+version: '3'
+
+volumes: 
+  db-data:
+
+services: 
+  web:
+    build: .
+    command: bash -c "rm -f tmp/pids/server.pid ; rails s -b 0.0.0.0"
+    ports:
+      - '3000:3000'
+    volumes: 
+      - '.:/product-register'
+    # 環境変数を設定できる
+    environment: 
+      - 'DATABASE_PASSWORD=postgres'
+    tty: true
+    stdin_open: true
+    depends_on: 
+      - db
+    links: 
+      - db
+    tty: true
+    stdin_open: true
+
+  db:
+    image: postgres
+    ports:
+      - '5432:5432'
+    volumes: 
+      - 'db-data:/var/lib/postgresql/data'
+    environment:
+    - 'POSTGRES_USER=postgres'
+    - 'POSTGRES_PASSWORD=postgres'
+    - 'POSTGRES_HOST_AUTH_METHOD=trust'
